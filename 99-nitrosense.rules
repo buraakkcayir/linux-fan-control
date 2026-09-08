@@ -1,0 +1,8 @@
+# Acer WMI NitroSense Fan and Thermal Profile permissions for non-root users
+SUBSYSTEM=="platform", DRIVER=="acer-wmi", RUN+="/bin/sh -c 'chmod 0666 /sys/devices/platform/acer-wmi/nitro_sense/fan_speed 2>/dev/null; chmod 0666 /sys/devices/platform/acer-wmi/nitro_sense/thermal_profile 2>/dev/null; chmod 0666 /sys/devices/platform/acer-wmi/predator_sense/fan_speed 2>/dev/null; chmod 0666 /sys/devices/platform/acer-wmi/platform-profile/platform-profile-*/profile 2>/dev/null'"
+
+# AMD CPU Boost and Energy Performance Preference permissions
+SUBSYSTEM=="cpu", RUN+="/bin/sh -c 'chmod 0666 /sys/devices/system/cpu/cpufreq/boost 2>/dev/null; chmod 0666 /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference 2>/dev/null'"
+
+# PCIe ASPM permissions
+KERNEL=="parameters", SUBSYSTEM=="module", RUN+="/bin/sh -c 'chmod 0666 /sys/module/pcie_aspm/parameters/policy 2>/dev/null'"
