@@ -9,9 +9,9 @@ This project pairs a modern **PyQt6 NitroSense GUI** with an automated **SCX (sc
 ## 🖼️ Interface Preview
 
 <p align="center">
-  <img src="assets/active.png" width="45%" alt="NitroSense Active State" />
+  <img src="assets/nitro-active.png" width="45%" alt="NitroSense Active State" />
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/suspended.png" width="45%" alt="NitroSense GPU Suspended State" />
+  <img src="assets/nitro-sleep.png" width="45%" alt="NitroSense GPU Suspended State" />
 </p>
 
 ---
