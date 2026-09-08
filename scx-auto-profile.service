@@ -1,0 +1,12 @@
+[Unit]
+Description=Acer Nitro SCX & Hardware Power Profile Daemon
+After=power-profiles-daemon.service
+
+[Service]
+Type=simple
+ExecStart=%h/nitrosense-linux/scx-auto-profile.sh
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target
