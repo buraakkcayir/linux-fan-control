@@ -68,15 +68,37 @@ def detect_cpu_name():
     return "CPU • AMD Ryzen"
 
 def detect_gpu_name():
+    # 1. Try lspci first (Works even when dGPU is in runtime suspend / sleeping)
+    try:
+        out = subprocess.check_output(["lspci"], timeout=1, text=True, stderr=subprocess.DEVNULL)
+        for line in out.splitlines():
+            if "VGA" in line or "3D" in line or "Display" in line:
+                if "NVIDIA" in line:
+                    if "[" in line and "]" in line:
+                        bracket = line.split("[")[1].split("]")[0]
+                        clean = bracket.replace("GeForce ", "").replace("Laptop", "").strip()
+                        return f"GPU • {clean}"
+                    else:
+                        parts = line.split("NVIDIA Corporation")
+                        if len(parts) > 1:
+                            clean = parts[1].strip().split("(")[0].replace("GeForce", "").strip()
+                            return f"GPU • {clean}"
+    except Exception:
+        pass
+
+    # 2. Fallback to nvidia-smi if active
     try:
         out = subprocess.check_output(
             ["nvidia-smi", "--query-gpu=name", "--format=csv,noheader"],
             timeout=1, text=True, stderr=subprocess.DEVNULL
         )
-        name = out.strip().replace("NVIDIA GeForce ", "").replace(" Laptop GPU", "")
-        return f"GPU • {name}"
+        name = out.strip().replace("NVIDIA GeForce ", "").replace(" Laptop GPU", "").strip()
+        if name:
+            return f"GPU • {name}"
     except Exception:
-        return "GPU • NVIDIA RTX"
+        pass
+
+    return "GPU • NVIDIA GPU"
 
 def get_cpu_temperature():
     try:
