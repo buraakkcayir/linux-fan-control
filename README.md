@@ -91,7 +91,8 @@ Use a writable checkout path and avoid hard-coded personal home directories in s
 
 ```bash
 PROJECT_DIR="/path/to/project"
-git clone https://github.com/your-org/nitrosense-linux.git "$PROJECT_DIR"
+REPOSITORY_URL="https://github.com/<owner>/<repository>.git"
+git clone "$REPOSITORY_URL" "$PROJECT_DIR"
 cd "$PROJECT_DIR"
 ```
 
@@ -100,7 +101,7 @@ cd "$PROJECT_DIR"
 Apply the bundled rules so a regular user can access the Acer WMI fan and thermal nodes without root privileges.
 
 ```bash
-sudo cp 99-nitrosense.rules /etc/udev/rules.d/
+sudo cp 99-linux-fan-control.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 ```
@@ -108,7 +109,7 @@ sudo udevadm trigger
 ### 2. Run the GUI
 
 ```bash
-./nitrosense-gui.py
+./linux-fan-control.py
 ```
 
 You can also bind the launcher to a custom keyboard shortcut from your desktop environment.
@@ -130,7 +131,7 @@ If your checkout lives outside the default home directory, update the service fi
 | --- | --- | --- |
 | `scx-auto-profile.sh` | scheduler and thermal profile switcher | runs on profile changes and startup |
 | `scx-auto-profile.service` | systemd user service | uses a portable path or a symlinked install path |
-| `99-nitrosense.rules` | udev permissions | grants write access to hardware sysfs nodes |
+| `99-linux-fan-control.rules` | udev permissions | grants write access to hardware sysfs nodes |
 | `powerprofilesctl` | active power profile source | used to decide quiet / balanced / performance mode |
 
 ## Usage Examples
@@ -138,7 +139,7 @@ If your checkout lives outside the default home directory, update the service fi
 ### Start the GUI manually
 
 ```bash
-./nitrosense-gui.py
+./linux-fan-control.py
 ```
 
 ### Start the daemon in the current user session
@@ -193,7 +194,7 @@ powerprofilesctl get
 Remove the installed udev rule and disable the user service:
 
 ```bash
-sudo rm -f /etc/udev/rules.d/99-nitrosense.rules
+sudo rm -f /etc/udev/rules.d/99-linux-fan-control.rules
 systemctl --user disable --now scx-auto-profile.service
 rm -f ~/.config/systemd/user/scx-auto-profile.service
 ```

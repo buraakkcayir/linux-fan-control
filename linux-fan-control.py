@@ -11,7 +11,7 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QIcon
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 
-SOCKET_NAME = f"nitrosense_{os.getuid()}_ipc_socket"
+SOCKET_NAME = f"linux_fan_control_{os.getuid()}_ipc_socket"
 
 LAST_GPU_QUERY_TIME = 0
 CACHED_GPU_TEMP = None
@@ -194,7 +194,7 @@ def get_fan_rpms(last_cpu=0, last_gpu=0):
 
 # ----------------- UI Class -----------------
 
-class NitroSenseApp(QWidget):
+class LinuxFanControlApp(QWidget):
     def __init__(self):
         super().__init__()
         self.active_profile = read_current_profile()
@@ -241,7 +241,7 @@ class NitroSenseApp(QWidget):
         self.setWindowTitle('Linux Fan Control')
         self.setFixedSize(490, 560)
 
-        icon_path = os.path.expanduser("~/.local/share/icons/nitro-fan.svg")
+        icon_path = os.path.expanduser("~/.local/share/icons/linux-fan-control.svg")
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
 
@@ -671,9 +671,9 @@ class NitroSenseApp(QWidget):
                 self.lbl_sgpu.setText(f"GPU: {self.saved_custom_gpu}%")
 
     def initTray(self):
-        tray_icon_path = os.path.expanduser("~/.local/share/icons/nitro-tray.svg")
+        tray_icon_path = os.path.expanduser("~/.local/share/icons/linux-fan-control-tray.svg")
         if not os.path.exists(tray_icon_path):
-            tray_icon_path = os.path.expanduser("~/.local/share/icons/nitro-fan.svg")
+            tray_icon_path = os.path.expanduser("~/.local/share/icons/linux-fan-control.svg")
 
         self.tray = QSystemTrayIcon(QIcon(tray_icon_path), self)
         self.tray.setToolTip("Linux Fan Control")
@@ -742,7 +742,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     app.setApplicationName("LinuxFanControl")
     app.setApplicationDisplayName("Linux Fan Control")
-    app.setDesktopFileName("nitrosense")
+    app.setDesktopFileName("linux-fan-control")
 
     socket = QLocalSocket()
     socket.connectToServer(SOCKET_NAME)
@@ -752,6 +752,6 @@ if __name__ == '__main__':
         sys.exit(0)
 
     app.setQuitOnLastWindowClosed(False)
-    ex = NitroSenseApp()
+    ex = LinuxFanControlApp()
     ex.show()
     sys.exit(app.exec())
