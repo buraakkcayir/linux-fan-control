@@ -23,9 +23,30 @@ SET_NITRO_PROFILE() {
     fi
 }
 
-SWITCH_SCX() {
-    local CMD="$1"
-    eval "$CMD" >/dev/null 2>&1
+RUN_SCX_COMMAND() {
+    local MODE="$1"
+    shift
+
+    if ! command -v scxctl >/dev/null 2>&1; then
+        echo "[SCX-Auto] scxctl is not available; skipping scheduler change." >&2
+        return 1
+    fi
+
+    case "$MODE" in
+        "switch")
+            scxctl switch "$@"
+            ;;
+        "start")
+            scxctl start "$@"
+            ;;
+        "stop")
+            scxctl stop
+            ;;
+        *)
+            echo "[SCX-Auto] Unsupported scheduler action: $MODE" >&2
+            return 1
+            ;;
+    esac
 }
 
 APPLY_HARDWARE_TWEAKS() {
@@ -63,25 +84,30 @@ APPLY_HARDWARE_TWEAKS() {
 }
 
 APPLY_PROFILE() {
-    PROFILE=$(powerprofilesctl get 2>/dev/null)
-    echo "[SCX-Auto] Power profile detected: $PROFILE"
+    if command -v powerprofilesctl >/dev/null 2>&1; then
+        PROFILE="$(powerprofilesctl get 2>/dev/null)"
+    else
+        PROFILE="balanced"
+    fi
+
+    echo "[SCX-Auto] Power profile detected: ${PROFILE:-balanced}"
 
     case "$PROFILE" in
         "performance")
             echo "[SCX-Auto] -> Performance mode: activating scx_bpfland..."
-            SWITCH_SCX "scxctl switch -s bpfland || scxctl start -s bpfland"
+            RUN_SCX_COMMAND switch -s bpfland || RUN_SCX_COMMAND start -s bpfland
             SET_NITRO_PROFILE "performance"
             APPLY_HARDWARE_TWEAKS "performance"
             ;;
         "power-saver")
             echo "[SCX-Auto] -> Power-saver mode: activating scx_lavd (powersave)..."
-            SWITCH_SCX "scxctl switch -s lavd -m powersave || scxctl start -s lavd -m powersave"
+            RUN_SCX_COMMAND switch -s lavd -m powersave || RUN_SCX_COMMAND start -s lavd -m powersave
             SET_NITRO_PROFILE "quiet"
             APPLY_HARDWARE_TWEAKS "quiet"
             ;;
         "balanced"|*)
             echo "[SCX-Auto] -> Balanced mode: reverting to default kernel scheduler..."
-            SWITCH_SCX "scxctl stop"
+            RUN_SCX_COMMAND stop
             SET_NITRO_PROFILE "balanced"
             APPLY_HARDWARE_TWEAKS "balanced"
             ;;
