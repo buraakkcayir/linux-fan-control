@@ -1,4 +1,4 @@
-# Acer WMI NitroSense Fan and Thermal Profile permissions for non-root users
+# Acer WMI fan and thermal profile permissions for non-root users
 SUBSYSTEM=="platform", DRIVER=="acer-wmi", RUN+="/bin/sh -c 'for path in /sys/devices/platform/acer-wmi/nitro_sense/fan_speed /sys/devices/platform/acer-wmi/nitro_sense/thermal_profile /sys/devices/platform/acer-wmi/predator_sense/fan_speed; do [ -e \"$path\" ] && chmod 0666 \"$path\" 2>/dev/null; done; for path in /sys/devices/platform/acer-wmi/platform-profile/platform-profile-*/profile; do [ -e \"$path\" ] && chmod 0666 \"$path\" 2>/dev/null; done'"
 
 # AMD CPU Boost and Energy Performance Preference permissions

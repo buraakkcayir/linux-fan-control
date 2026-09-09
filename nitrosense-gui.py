@@ -238,7 +238,7 @@ class NitroSenseApp(QWidget):
             self.activateWindow()
 
     def initUI(self):
-        self.setWindowTitle('NitroSense')
+        self.setWindowTitle('Linux Fan Control')
         self.setFixedSize(490, 560)
 
         icon_path = os.path.expanduser("~/.local/share/icons/nitro-fan.svg")
@@ -676,7 +676,7 @@ class NitroSenseApp(QWidget):
             tray_icon_path = os.path.expanduser("~/.local/share/icons/nitro-fan.svg")
 
         self.tray = QSystemTrayIcon(QIcon(tray_icon_path), self)
-        self.tray.setToolTip("NitroSense")
+        self.tray.setToolTip("Linux Fan Control")
 
         menu = QMenu()
         menu.addAction("Quiet Mode").triggered.connect(lambda: self.set_profile("quiet"))
@@ -740,8 +740,8 @@ class NitroSenseApp(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    app.setApplicationName("NitroSense")
-    app.setApplicationDisplayName("NitroSense")
+    app.setApplicationName("LinuxFanControl")
+    app.setApplicationDisplayName("Linux Fan Control")
     app.setDesktopFileName("nitrosense")
 
     socket = QLocalSocket()

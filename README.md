@@ -1,15 +1,15 @@
-# NitroSense Linux
+# Linux Fan Control Workaround for Supported Acer Laptops
 
-NitroSense Linux is a lightweight hardware tuning and power-management utility for supported Acer Nitro laptops running Linux. It combines a PyQt6 desktop dashboard with an SCX auto-profile daemon so the system can automatically switch between quiet, balanced, and performance behavior based on the active power profile.
+This project is a lightweight fan-control and power-management workaround for supported Acer laptops running Linux. It combines a PyQt6 desktop dashboard with an SCX auto-profile daemon so the system can automatically switch between quiet, balanced, and performance behavior based on the active power profile.
 
 This project is an independent, unofficial project and is not affiliated with, endorsed by, or sponsored by Acer, AMD, or the sched-ext project maintainers.
 
 ## Interface Preview
 
 <p align="center">
-  <img src="assets/nitro-active.png" width="45%" alt="NitroSense active profile" />
+  <img src="assets/nitro-active.png" width="45%" alt="Active thermal profile" />
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/nitro-sleep.png" width="45%" alt="NitroSense suspended GPU state" />
+  <img src="assets/nitro-sleep.png" width="45%" alt="Suspended GPU state" />
 </p>
 
 ## Purpose and Scope
@@ -31,7 +31,7 @@ This project is designed for laptop owners who want a simplified, low-overhead w
 ## Architecture
 
 ```text
-[NitroSense GUI (PyQt6)]
+[Linux fan-control GUI (PyQt6)]
        │
        ▼ (changes mode: Quiet / Balanced / Performance)
 [power-profiles-daemon]
