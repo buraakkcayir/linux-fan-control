@@ -13,7 +13,7 @@ SET_NITRO_PROFILE() {
         fi
     done
 
-    # Dedicated NitroSense node (if present)
+    # Dedicated Acer thermal node (if present)
     if [ -w "/sys/devices/platform/acer-wmi/nitro_sense/thermal_profile" ]; then
         echo "$TARGET_PROFILE" > "/sys/devices/platform/acer-wmi/nitro_sense/thermal_profile" 2>/dev/null
     fi
