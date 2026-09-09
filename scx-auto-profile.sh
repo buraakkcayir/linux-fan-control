@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SET_NITRO_PROFILE() {
+SET_ACER_PROFILE() {
     local TARGET_PROFILE="$1"
     local APPLIED=0
 
@@ -19,7 +19,7 @@ SET_NITRO_PROFILE() {
     fi
 
     if [ "$APPLIED" -eq 1 ]; then
-        echo "[Nitro-Auto] -> Applied thermal profile: $TARGET_PROFILE"
+        echo "[Acer-Auto] -> Applied thermal profile: $TARGET_PROFILE"
     fi
 }
 
@@ -57,10 +57,10 @@ APPLY_HARDWARE_TWEAKS() {
     if [ -w "$BOOST_PATH" ]; then
         if [ "$MODE" = "quiet" ]; then
             echo "0" > "$BOOST_PATH" 2>/dev/null
-            echo "[Nitro-Auto] -> CPU Boost DISABLED (quiet/cool)"
+            echo "[Acer-Auto] -> CPU Boost DISABLED (quiet/cool)"
         else
             echo "1" > "$BOOST_PATH" 2>/dev/null
-            echo "[Nitro-Auto] -> CPU Boost ENABLED"
+            echo "[Acer-Auto] -> CPU Boost ENABLED"
         fi
     fi
 
@@ -96,19 +96,19 @@ APPLY_PROFILE() {
         "performance")
             echo "[SCX-Auto] -> Performance mode: activating scx_bpfland..."
             RUN_SCX_COMMAND switch -s bpfland || RUN_SCX_COMMAND start -s bpfland
-            SET_NITRO_PROFILE "performance"
+            SET_ACER_PROFILE "performance"
             APPLY_HARDWARE_TWEAKS "performance"
             ;;
         "power-saver")
             echo "[SCX-Auto] -> Power-saver mode: activating scx_lavd (powersave)..."
             RUN_SCX_COMMAND switch -s lavd -m powersave || RUN_SCX_COMMAND start -s lavd -m powersave
-            SET_NITRO_PROFILE "quiet"
+            SET_ACER_PROFILE "quiet"
             APPLY_HARDWARE_TWEAKS "quiet"
             ;;
         "balanced"|*)
             echo "[SCX-Auto] -> Balanced mode: reverting to default kernel scheduler..."
             RUN_SCX_COMMAND stop
-            SET_NITRO_PROFILE "balanced"
+            SET_ACER_PROFILE "balanced"
             APPLY_HARDWARE_TWEAKS "balanced"
             ;;
     esac

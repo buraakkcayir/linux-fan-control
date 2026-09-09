@@ -1,5 +1,5 @@
 [Unit]
-Description=Acer Nitro SCX & Hardware Power Profile Daemon
+Description=Acer Laptop SCX & Hardware Power Profile Daemon
 After=power-profiles-daemon.service
 
 [Service]
