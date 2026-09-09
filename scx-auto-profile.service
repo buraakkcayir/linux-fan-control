@@ -4,7 +4,8 @@ After=power-profiles-daemon.service
 
 [Service]
 Type=simple
-ExecStart=%h/nitrosense-linux/scx-auto-profile.sh
+Environment=PROJECT_DIR=/path/to/project
+ExecStart=/bin/bash -lc 'exec "$PROJECT_DIR/scx-auto-profile.sh"'
 Restart=always
 RestartSec=3
 
