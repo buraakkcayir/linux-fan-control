@@ -7,9 +7,9 @@ This project is an independent, unofficial project and is not affiliated with, e
 ## Interface Preview
 
 <p align="center">
-  <img src="assets/nitro-active.png" width="45%" alt="Active thermal profile" />
+  <img src="assets/active-profile.png" width="45%" alt="Active thermal profile" />
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/nitro-sleep.png" width="45%" alt="Suspended GPU state" />
+  <img src="assets/suspended-gpu.png" width="45%" alt="Suspended GPU state" />
 </p>
 
 ## Purpose and Scope
