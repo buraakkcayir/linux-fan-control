@@ -198,6 +198,8 @@ class LinuxFanControlApp(QWidget):
     def __init__(self):
         super().__init__()
         self.active_profile = read_current_profile()
+        self.pending_profile = None
+        self.pending_profile_since = 0.0
         self.fan_mode = "auto"
 
         self.last_cpu_rpm = 0
@@ -531,6 +533,8 @@ class LinuxFanControlApp(QWidget):
 
     def set_profile(self, profile):
         self.active_profile = profile
+        self.pending_profile = profile
+        self.pending_profile_since = time.monotonic()
 
         ppd_map = {
             "quiet": "power-saver",
@@ -698,11 +702,25 @@ class LinuxFanControlApp(QWidget):
 
     def update_telemetry(self):
         current_hw_profile = read_current_profile()
-        if current_hw_profile != self.active_profile:
+        profile_state_changed = False
+        if self.pending_profile:
+            if current_hw_profile == self.pending_profile:
+                self.pending_profile = None
+            elif time.monotonic() - self.pending_profile_since >= 5:
+                self.pending_profile = None
+                self.active_profile = current_hw_profile
+                if current_hw_profile == "quiet":
+                    self.fan_mode = "auto"
+                    write_fan_speed(0, 0)
+                profile_state_changed = True
+        elif current_hw_profile != self.active_profile:
             self.active_profile = current_hw_profile
             if current_hw_profile == "quiet":
                 self.fan_mode = "auto"
                 write_fan_speed(0, 0)
+            profile_state_changed = True
+
+        if profile_state_changed:
             self.refresh_ui_state()
 
         cpu_t = get_cpu_temperature()
