@@ -49,22 +49,30 @@ RUN_SCX_COMMAND() {
     esac
 }
 
+POWER_PROFILE() {
+    if command -v powerprofilesctl >/dev/null 2>&1; then
+        powerprofilesctl get 2>/dev/null
+    else
+        printf '%s\n' "balanced"
+    fi
+}
+
+SCX_PROFILE_STILL_ACTIVE() {
+    local EXPECTED_PROFILE="$1"
+    [ "$(POWER_PROFILE)" = "$EXPECTED_PROFILE" ]
+}
+
+STOP_STALE_SCX_SCHEDULER() {
+    sleep 1
+    if ! SCX_PROFILE_STILL_ACTIVE "$1"; then
+        RUN_SCX_COMMAND stop
+    fi
+}
+
 APPLY_HARDWARE_TWEAKS() {
     local MODE="$1"
 
-    # 1. AMD CPU Turbo Boost (Disabled in Quiet mode, Enabled otherwise)
-    local BOOST_PATH="/sys/devices/system/cpu/cpufreq/boost"
-    if [ -w "$BOOST_PATH" ]; then
-        if [ "$MODE" = "quiet" ]; then
-            echo "0" > "$BOOST_PATH" 2>/dev/null
-            echo "[Acer-Auto] -> CPU Boost DISABLED (quiet/cool)"
-        else
-            echo "1" > "$BOOST_PATH" 2>/dev/null
-            echo "[Acer-Auto] -> CPU Boost ENABLED"
-        fi
-    fi
-
-    # 2. AMD Energy Performance Preference (EPP)
+    # AMD Energy Performance Preference (EPP)
     local EPP_VAL="balance_performance"
     [ "$MODE" = "quiet" ] && EPP_VAL="power"
     [ "$MODE" = "performance" ] && EPP_VAL="performance"
@@ -73,7 +81,7 @@ APPLY_HARDWARE_TWEAKS() {
         [ -w "$epp" ] && echo "$EPP_VAL" > "$epp" 2>/dev/null
     done
 
-    # 3. PCIe ASPM (Active State Power Management)
+    # PCIe ASPM (Active State Power Management)
     local ASPM_PATH="/sys/module/pcie_aspm/parameters/policy"
     if [ -w "$ASPM_PATH" ]; then
         local ASPM_VAL="default"
@@ -84,11 +92,7 @@ APPLY_HARDWARE_TWEAKS() {
 }
 
 APPLY_PROFILE() {
-    if command -v powerprofilesctl >/dev/null 2>&1; then
-        PROFILE="$(powerprofilesctl get 2>/dev/null)"
-    else
-        PROFILE="balanced"
-    fi
+    PROFILE="$(POWER_PROFILE)"
 
     echo "[SCX-Auto] Power profile detected: ${PROFILE:-balanced}"
 
@@ -96,12 +100,22 @@ APPLY_PROFILE() {
         "performance")
             echo "[SCX-Auto] -> Performance mode: activating scx_bpfland..."
             RUN_SCX_COMMAND switch -s bpfland || RUN_SCX_COMMAND start -s bpfland
+            if ! SCX_PROFILE_STILL_ACTIVE "performance"; then
+                echo "[SCX-Auto] -> Profile changed during scheduler activation; stopping stale scheduler."
+                STOP_STALE_SCX_SCHEDULER "performance"
+                return
+            fi
             SET_ACER_PROFILE "performance"
             APPLY_HARDWARE_TWEAKS "performance"
             ;;
         "power-saver")
             echo "[SCX-Auto] -> Power-saver mode: activating scx_lavd (powersave)..."
             RUN_SCX_COMMAND switch -s lavd -m powersave || RUN_SCX_COMMAND start -s lavd -m powersave
+            if ! SCX_PROFILE_STILL_ACTIVE "power-saver"; then
+                echo "[SCX-Auto] -> Profile changed during scheduler activation; stopping stale scheduler."
+                STOP_STALE_SCX_SCHEDULER "power-saver"
+                return
+            fi
             SET_ACER_PROFILE "quiet"
             APPLY_HARDWARE_TWEAKS "quiet"
             ;;
